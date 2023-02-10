@@ -20,6 +20,6 @@ Valid arguments:
     
     Lists all entries in the database.
 
-*getRow <id>*
+*getRow \<id\>*
     
     Prints the data from the row with id \`id\`.
