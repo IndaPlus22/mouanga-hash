@@ -60,6 +60,7 @@ insert a new row
 returns True on success,
 returns False if there already is a row with that name
 """
+
 def insert(row: Row):
     index = hash(row.name)
     
@@ -68,14 +69,14 @@ def insert(row: Row):
         if TABLE[index].name == "":
             # found suitable location, inserting
             TABLE[index] = row
-            print(f"Done! Index: {index}")
+
             return True
 
         else:
             # did not find suitable location, checking the next index
             index += 1
 
-            if TABLE[index].name == row.name:
+            if TABLE[index - 1].name == row.name:
                 # entry already exists!!!
                 return False
 
@@ -84,7 +85,6 @@ def insert(row: Row):
                 expand_table(16)
                 TABLE[len(TABLE) - 15] = row
                 return True
-
 
 """ 
 delete the row with the name `name` 
@@ -121,7 +121,8 @@ def save_db():
     file = open("db.420", "w")
     lines = []
     for row in TABLE:
-        lines.append(row.as_file())
+        lines.append(row.as_file() + "\n")
+    print(lines)
     file.writelines(lines)
 
 try:
@@ -135,16 +136,50 @@ except:
     # if db does not exist, then create new one
     expand_table(16)
 
+def err_invalid_input():
+    print("""
+Valid arguments:
+
+
+insert <name> <cost/gram> >grams> <description>
+    Inserts the given row into the database.
+
+delete <name>
+    Deletes the row with name `name` from the database.
+
+list
+    Lists all entries in the database.
+
+getRow <id>
+    Prints the data from the row with id `id`.
+    
+""")
+
+if len(argv) < 2:
+    print("""Valid arguments:
+insert <name> <cost/gram> <grams> <description>
+    Inserts the given row into the database.
+
+delete <name>
+    Deletes the row with name `name` from the database.
+
+list
+    Lists all entries in the database.
+
+getRow <id>
+    Prints the data from the row with id `id`.""")
 
 match argv[1]:
     case "insert":
-        insert(Row(
-            argv[2],        # name
-            int(argv[3]),    # price/gram
-            int(argv[4]),    # grams
-            argv[5]         # description
-        ))
-        save_db()
+        if insert(Row(
+            argv[2],            # name
+            int(argv[3]),       # price/gram
+            int(argv[4]),       # grams
+            argv[5]             # description
+        )):
+            save_db()
+        else:
+            print(f"Name `{argv[2]}` already exists!")
     
     case "delete":
         if delete(argv[2]):
@@ -155,12 +190,15 @@ match argv[1]:
     case "list":
         list_rows()
 
-    case "getId":
+    case "getRow":
         _row = TABLE[int(argv[2])]
         if _row != Row():
             print(TABLE)
         else:
             print(f"Invalid id `{argv[2]}`")
+    
+    case _:
+        err_invalid_input()
 
 
 
