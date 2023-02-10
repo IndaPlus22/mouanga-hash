@@ -148,7 +148,7 @@ def err_invalid_input():
 Valid arguments:
 
 
-insert <name> <cost/gram> >grams> <description>
+insert <name> <cost/gram> <grams> <description>
     Inserts the given row into the database.
 
 delete <name>
