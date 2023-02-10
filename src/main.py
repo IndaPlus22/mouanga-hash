@@ -25,12 +25,14 @@ class Row:
         return f"""Name: {self.name}
 Price per gram: {self.gram_price}
 Grams: {self.grams}
-Description: {self.description}
-"""
+Description: {self.description}"""
+
+    def __repr__(self):
+        return self.__str__()
     
     # what to save when saving this row to a file
     def as_file(self):
-        return f"""{self.name}|{self.gram_price}|{self.grams}|{self.description}"""
+        return f"{self.name}|{self.gram_price}|{self.grams}|{self.description}"
 
 # convert a row from readlines() to a Row
 def line_to_row(line):
@@ -43,7 +45,8 @@ def expand_table(rows: int):
     for _ in range(rows):
         TABLE.append(Row())
 
-
+def clean_table():
+    pass
 
 
 # convert a row name to an array index
@@ -81,7 +84,7 @@ def insert(row: Row):
                 return False
 
             # went out of bounds, expanding table and inserting row there
-            if index > len(TABLE):
+            if index == len(TABLE):
                 expand_table(16)
                 TABLE[len(TABLE) - 15] = row
                 return True
@@ -97,7 +100,7 @@ def delete(name):
     
     # iterate through possible indices for the name
     while True:
-        if TABLE[index].name == "":
+        if TABLE[index].name == name:
             TABLE[index] = Row()
             return True
         else:
@@ -107,10 +110,9 @@ def delete(name):
 
 
 def list_rows():
-    empty_row = Row()
     for row in TABLE:
-        if row != empty_row:
-            print(row)
+        if row.name != "":
+            print(row, "\n")
 
 # get the row at row_id.
 def get_row(row_id):
@@ -122,8 +124,12 @@ def save_db():
     lines = []
     for row in TABLE:
         lines.append(row.as_file() + "\n")
-    print(lines)
+    for line in lines:
+        if line[-2:] == "\n\n":
+            line = line[:-1]
     file.writelines(lines)
+    file.close()
+    print("Ok")
 
 try:
     # try to import existing db
@@ -131,6 +137,7 @@ try:
     lines = file.readlines()
     file.close()
     for line in lines:
+        line = line[:-1]
         TABLE.append(line_to_row(line))
 except:
     # if db does not exist, then create new one
@@ -156,18 +163,8 @@ getRow <id>
 """)
 
 if len(argv) < 2:
-    print("""Valid arguments:
-insert <name> <cost/gram> <grams> <description>
-    Inserts the given row into the database.
-
-delete <name>
-    Deletes the row with name `name` from the database.
-
-list
-    Lists all entries in the database.
-
-getRow <id>
-    Prints the data from the row with id `id`.""")
+    err_invalid_input()
+    exit()
 
 match argv[1]:
     case "insert":
@@ -192,8 +189,8 @@ match argv[1]:
 
     case "getRow":
         _row = TABLE[int(argv[2])]
-        if _row != Row():
-            print(TABLE)
+        if _row.name != "":
+            print(TABLE[int(argv[2])])
         else:
             print(f"Invalid id `{argv[2]}`")
     
