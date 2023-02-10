@@ -14,7 +14,7 @@ Valid arguments:
 
 *delete* \<name\>
     
-    Deletes the row with name \`name\` from the database.
+    Deletes the row with name `name` from the database.
 
 *list*
     
@@ -22,4 +22,4 @@ Valid arguments:
 
 *getRow \<id\>*
     
-    Prints the data from the row with id \`id\`.
+    Prints the data from the row with id `id`.
